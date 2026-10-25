@@ -1,0 +1,37 @@
+
+name: Build Ridwan Racing APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'ridwan_racing_android_project.zip'
+      - '.github/workflows/build.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Extract project
+        run: unzip -q ridwan_racing_android_project.zip
+
+      - name: Build APK
+        run: gradle -p ridwan_racing_android assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ridwan-racing-apk
+          path: ridwan_racing_android/app/build/outputs/apk/debug/app-debug.apk
